@@ -1,5 +1,6 @@
 package com.emottet.reactivewebserver.rest;
 
+import com.emottet.reactivewebserver.Config;
 import com.emottet.reactivewebserver.json.JsonWriter;
 import com.emottet.reactivewebserver.services.PersonService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +36,7 @@ public class PersonApi {
           System.out.println("Executing on thread: " + Thread.currentThread().getName());
           return ServerResponse.ok().body(Mono.just(Thread.currentThread().getName()), String.class);
         }).onErrorResume(JsonProcessingException.class, (e) -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(Mono.just(e.getMessage()), String.class));
+            .body(Mono.just(e.getMessage()), String.class))
+        .subscribeOn(Config.APPLICATION_SCHEDULER);
   }
 }

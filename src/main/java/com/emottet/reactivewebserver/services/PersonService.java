@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.emottet.reactivewebserver.Config;
 import com.emottet.reactivewebserver.domain.Person;
 
 import reactor.core.publisher.Flux;
@@ -19,6 +20,6 @@ public class PersonService {
   }
 
   public Flux<Person> list() {
-    return Flux.fromIterable(this.persons);
+    return Flux.fromIterable(this.persons).subscribeOn(Config.APPLICATION_SCHEDULER);
   }
 }
