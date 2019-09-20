@@ -26,8 +26,15 @@ public class PersonApi {
     return this.personService.list() // returns a Flux<Person>
         .collectList()
         // turns the flux into a Mono<List<T>> to allow sending a single response
-        .flatMap(JsonWriter::write).flatMap((json) -> ServerResponse.ok().body(Mono.just(json), String.class))
-        .onErrorResume(JsonProcessingException.class,
-            (e) -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Mono.just(e.getMessage()), String.class));
+        .flatMap(JsonWriter::write).flatMap((json) -> {
+          try {
+            Thread.sleep(3000);
+          } catch (InterruptedException e1) {
+            e1.printStackTrace();
+          }
+          System.out.println("Executing on thread: " + Thread.currentThread().getName());
+          return ServerResponse.ok().body(Mono.just(Thread.currentThread().getName()), String.class);
+        }).onErrorResume(JsonProcessingException.class, (e) -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Mono.just(e.getMessage()), String.class));
   }
 }
